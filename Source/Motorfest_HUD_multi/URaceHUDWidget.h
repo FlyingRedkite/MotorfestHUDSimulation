@@ -5,6 +5,7 @@
 #include "ARaceGameState.h"
 #include "ARacePlayerState.h"
 #include "Blueprint/UserWidget.h"
+#include "Components/TextBlock.h"
 #include "URaceHUDWidget.generated.h"
 
 /**
@@ -43,7 +44,7 @@ public:
 	UPROPERTY(BlueprintReadOnly)
 	float RaceTime = 0.0f;
 	
-	UPROPERTY(BlueprintReadWrite, meta=(BindWidget))
+	UPROPERTY(meta=(BindWidget))
 	class UVerticalBox* LeaderboardBox;
 
 protected:
@@ -60,5 +61,10 @@ private:
 	ARaceGameState* RaceGameState;
 	
 	void UpdateFromGameState();
+	
+	UPROPERTY()
+	TArray<UTextBlock*> LeaderboardLines;
+
+	static constexpr int32 MaxPlayers = 4;
 	
 };

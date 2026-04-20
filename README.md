@@ -1,9 +1,7 @@
-# MotorfestHUDSimulation
-
 # RaceHUD Multiplayer
-**UE5.7 · C++ · Réplication · Serveur autoritaire**
+**UE5.7 · C++ · Réplication**
 
-Prototype technique de HUD multijoueur en Unreal Engine 5.7, entièrement en C++. Focus sur l'architecture réseau UE5 : réplication de variables, Server/Client RPC, serveur autoritaire. Pas de physique voiture — le projet cible délibérément la couche réseau et UI, pas la mécanique de jeu.
+Prototype technique d'un HUD multijoueur en Unreal Engine 5.7, entièrement en C++. Focus sur l'architecture réseau UE5 : réplication de variables, Server/Client RPC, serveur autoritaire. Pas de physique voiture — le projet cible délibérément la couche réseau et UI, pas la mécanique de jeu.
 
 ---
 
@@ -43,11 +41,11 @@ Un serveur autoritaire UE5 fait tourner une partie avec 2 à 4 cubes contrôlabl
 
 | Classe | Rôle | Existe où |
 |---|---|---|
-| `AMotorfest_HUD_multiGameMode` | Autorité, calcule le classement | Serveur uniquement |
+| `Motorfest_HUD_multiGameMode` | Autorité, calcule le classement | Serveur uniquement |
 | `ARaceGameState` | Classement et temps — répliqués | Serveur + tous clients |
 | `ARacePlayerState` | Vitesse, rang, distance — répliqués | Serveur + tous clients |
-| `AACarPlayerCharacter` | Cube contrôlable, envoie sa vitesse et distance au serveur | Serveur + tous clients |
-| `ARacePlayerController` | Crée le HUD, reçoit les Client RPC | Client uniquement |
+| `Motorfest_HUD_multiCharacter` | Cube contrôlable, envoie sa vitesse et distance au serveur | Serveur + tous clients |
+| `Motorfest_HUD_multiPlayerController` | Crée le HUD, reçoit les Client RPC | Client uniquement |
 | `URaceHUDWidget` | Lit les données répliquées, affiche le HUD | Client uniquement |
 | `AFinishLine` | Box trigger, détecte l'arrivée côté serveur | Serveur + tous clients |
 
@@ -79,26 +77,25 @@ Un serveur autoritaire UE5 fait tourner une partie avec 2 à 4 cubes contrôlabl
 
 ## Parallèles avec le projet ImGui
 
-| Projet ImGui | Projet UE5 | Concept commun |
-|---|---|---|
-| `networkThread()` toutes les 50ms | `AGameMode::Tick()` toutes les 500ms | Mise à jour autoritaire périodique |
-| `std::mutex` + copie locale | Réplication UE5 | Synchronisation sans corruption |
-| Écriture réservée au thread réseau | Écriture réservée au serveur | Autorité d'écriture unique |
-| `isLocal` dans `PlayerData` | `IsLocalController()` | Distinguer le joueur local |
-| Packet loss simulé (5%) | Network Emulation UE5 | Tester la robustesse du HUD |
+| Projet ImGui | Projet UE5 | Concept commun                                           |
+|---|---|----------------------------------------------------------|
+| `networkThread()` toutes les 50ms | `AGameMode::Tick()` toutes les 500ms | Mise à jour autoritaire périodique                       |
+| `std::mutex` + copie locale | Réplication UE5 | Synchronisation de l'état du jeu sans corruption des données |
+| Écriture réservée au thread réseau | Écriture réservée au serveur | Autorité d'écriture unique                               |
+| `isLocal` dans `PlayerData` | `IsLocalController()` | Distinguer le joueur local                               |
+| Packet loss simulé (5%) | Network Emulation UE5 | Tester l'UX du HUD                                       |
 
 ---
 
 ## Stack
 
 - **Moteur** : Unreal Engine 5.7
-- **Langage** : C++ (logique réseau et HUD), UMG (layout visuel uniquement)
-- **IDE** : JetBrains Rider + UnrealLink
+- **Techno** : C++ (logique réseau et HUD), UMG (layout visuel uniquement)
+- **IDE** : JetBrains Rider
 - **Template de base** : Third Person C++
 
 ## Lancer le projet
 
 1. Ouvrir `Motorfest_HUD_multi.uproject` dans UE5.7
-2. Compiler depuis Rider (`Ctrl+Shift+B`)
-3. Dans l'éditeur : Play → **Net Mode : Listen Server** → **Number of Players : 2**
-4. Pour simuler des conditions réseau réelles : `Editor Preferences → Play → Network Emulation → Latency 80ms / Packet Loss 5%`
+2. Compiler depuis Rider ou VS
+3. Lancer le projet avec l'option ""
